@@ -23,9 +23,7 @@ function Login() {
 
       <div className="relative w-full max-w-md rounded-2xl border border-border bg-card/70 p-8 shadow-elegant backdrop-blur-xl">
         <div className="flex flex-col items-center text-center">
-          <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-primary glow-primary">
-            <Sparkles className="h-6 w-6 text-primary-foreground" />
-          </div>
+          <Logo className="h-16 w-16" />
           <h1 className="mt-5 font-display text-2xl font-bold">Welcome to Nalyy Gate</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Sign in with Discord to access your dashboard.
