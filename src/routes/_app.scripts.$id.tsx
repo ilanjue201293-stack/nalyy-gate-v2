@@ -67,9 +67,6 @@ function ScriptDetails() {
               <h1 className="truncate font-display text-2xl font-bold sm:text-3xl">{script.name}</h1>
               <ScriptStatus status={script.status} />
             </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {script.game} · {script.description}
-            </p>
           </div>
         </div>
         <div className="flex shrink-0 gap-2">
@@ -106,9 +103,6 @@ function ScriptDetails() {
           {reveal ? script.apiKey : "•".repeat(script.apiKey.length)}
         </div>
         <div className="mt-4 flex flex-wrap gap-2 text-xs">
-          <Badge variant="outline" className="border-border">
-            HWID Lock: {script.hwidLock ? "ON" : "OFF"}
-          </Badge>
           <Badge variant="outline" className="border-border">
             Role: {script.discordRole}
           </Badge>
