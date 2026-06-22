@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Activity, KeyRound, Users, FileCode2, X } from "lucide-react";
+import { Activity, KeyRound, Users, FileCode2 } from "lucide-react";
 import {
   AreaChart,
   Area,
