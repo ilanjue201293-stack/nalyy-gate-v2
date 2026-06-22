@@ -46,9 +46,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border">
         <Link to="/" className="flex items-center gap-2 px-2 py-3">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gradient-primary glow-primary">
-            <Sparkles className="h-4 w-4 text-primary-foreground" />
-          </div>
+          <Logo className="h-9 w-9" />
           {!collapsed && (
             <div className="min-w-0">
               <div className="font-display text-base font-bold text-gradient">Nalyy Gate</div>
