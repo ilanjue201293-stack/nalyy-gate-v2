@@ -67,9 +67,6 @@ function ScriptDetails() {
               <h1 className="truncate font-display text-2xl font-bold sm:text-3xl">{script.name}</h1>
               <ScriptStatus status={script.status} />
             </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {script.game} · {script.description}
-            </p>
           </div>
         </div>
         <div className="flex shrink-0 gap-2">
