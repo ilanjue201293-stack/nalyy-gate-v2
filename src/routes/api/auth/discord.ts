@@ -1,14 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { randomBytes } from "node:crypto";
 import { getEnv, getRequiredEnv } from "@/lib/server/env";
 
 export const Route = createFileRoute("/api/auth/discord")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         const clientId = getRequiredEnv("DISCORD_CLIENT_ID");
-        const redirectUri = getRequiredEnv("DISCORD_REDIRECT_URI");
-        const state = randomBytes(16).toString("hex");
+        const redirectUri = getRedirectUri(request);
+        const state = randomHex(16);
         const url = new URL("https://discord.com/oauth2/authorize");
 
         url.searchParams.set("client_id", clientId);
@@ -35,6 +34,26 @@ export function getAvatarUrl(discordId: string, avatar?: string | null) {
   return `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png`;
 }
 
-export function getAppUrl() {
-  return getEnv("APP_URL", "http://localhost:5173");
+export function getAppUrl(request?: Request) {
+  const configured = getEnv("APP_URL");
+  if (configured) return configured.replace(/\/$/, "");
+  if (request) return new URL(request.url).origin;
+  const vercelUrl = getEnv("VERCEL_URL");
+  if (vercelUrl) return `https://${vercelUrl}`.replace(/\/$/, "");
+  return "http://localhost:5173";
+}
+
+export function getRedirectUri(request?: Request) {
+  const configured = getEnv("DISCORD_REDIRECT_URI");
+  if (configured) return configured;
+  return `${getAppUrl(request)}/api/auth/discord/callback`;
+}
+
+function randomHex(bytes: number) {
+  const values = new Uint8Array(bytes);
+  globalThis.crypto?.getRandomValues?.(values);
+  for (let index = 0; index < values.length; index += 1) {
+    if (values[index] === 0) values[index] = Math.floor(Math.random() * 256);
+  }
+  return Array.from(values, (value) => value.toString(16).padStart(2, "0")).join("");
 }

@@ -9,6 +9,16 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
+  const error = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("error") : null;
+  const errorMessage =
+    error === "oauth_state"
+      ? "Discord login expired. Try again."
+      : error === "discord_token"
+        ? "Discord refused the callback. Check the redirect URL in Developer Portal."
+        : error === "discord_user"
+          ? "Discord profile could not be loaded. Try again."
+          : null;
+
   return (
     <div className="relative grid min-h-screen place-items-center overflow-hidden px-4">
       <div className="absolute inset-0 grid-bg opacity-30" />
@@ -31,6 +41,11 @@ function Login() {
         </div>
 
         <div className="mt-8 space-y-3">
+          {errorMessage && (
+            <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {errorMessage}
+            </div>
+          )}
           <Button asChild variant="discord" size="lg" className="w-full">
             <a href="/api/auth/discord">
               <DiscordIcon /> Continue with Discord

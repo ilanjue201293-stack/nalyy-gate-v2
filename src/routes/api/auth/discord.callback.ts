@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { prisma } from "@/lib/server/prisma";
 import { createSession, sessionCookie } from "@/lib/server/http";
 import { getRequiredEnv } from "@/lib/server/env";
-import { getAppUrl, getAvatarUrl } from "./discord";
+import { getAppUrl, getAvatarUrl, getRedirectUri } from "./discord";
 
 type DiscordUser = {
   id: string;
@@ -29,9 +29,10 @@ export const Route = createFileRoute("/api/auth/discord/callback")({
         const code = url.searchParams.get("code");
         const state = url.searchParams.get("state");
         const cookieState = getCookie(request, "ng_oauth_state");
+        const appUrl = getAppUrl(request);
 
         if (!code || !state || !cookieState || state !== cookieState) {
-          return Response.redirect(`${getAppUrl()}/login?error=oauth_state`, 302);
+          return Response.redirect(`${appUrl}/login?error=oauth_state`, 302);
         }
 
         const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
@@ -42,12 +43,12 @@ export const Route = createFileRoute("/api/auth/discord/callback")({
             client_secret: getRequiredEnv("DISCORD_CLIENT_SECRET"),
             grant_type: "authorization_code",
             code,
-            redirect_uri: getRequiredEnv("DISCORD_REDIRECT_URI"),
+            redirect_uri: getRedirectUri(request),
           }),
         });
 
         if (!tokenResponse.ok) {
-          return Response.redirect(`${getAppUrl()}/login?error=discord_token`, 302);
+          return Response.redirect(`${appUrl}/login?error=discord_token`, 302);
         }
 
         const token = (await tokenResponse.json()) as { access_token: string };
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/api/auth/discord/callback")({
         });
 
         if (!userResponse.ok) {
-          return Response.redirect(`${getAppUrl()}/login?error=discord_user`, 302);
+          return Response.redirect(`${appUrl}/login?error=discord_user`, 302);
         }
 
         const discordUser = (await userResponse.json()) as DiscordUser;
@@ -90,7 +91,7 @@ export const Route = createFileRoute("/api/auth/discord/callback")({
 
         const session = await createSession(user.id);
         const headers = new Headers({
-          location: `${getAppUrl()}/dashboard`,
+          location: `${appUrl}/dashboard`,
         });
         headers.append("set-cookie", sessionCookie(session.token, session.expiresAt));
         headers.append(
