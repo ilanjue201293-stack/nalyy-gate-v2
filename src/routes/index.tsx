@@ -6,7 +6,6 @@ import {
   BarChart3,
   Cpu,
   Lock,
-  Zap,
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -57,11 +56,6 @@ const features = [
     title: "Discord OAuth",
     desc: "Sign-in with Discord and sync roles automatically with your premium tiers.",
   },
-  {
-    icon: Zap,
-    title: "Edge Delivery",
-    desc: "Scripts served from a low-latency edge network so your users load in milliseconds.",
-  },
 ];
 
 function Landing() {
@@ -76,8 +70,8 @@ function Landing() {
           </Link>
           <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
             <a href="#features" className="hover:text-foreground">Features</a>
-            <a href="#how" className="hover:text-foreground">How it works</a>
-            <a href="#pricing" className="hover:text-foreground">Pricing</a>
+            <Link to="/how-it-works" className="hover:text-foreground">How it works</Link>
+            <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
           </nav>
           <div className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
