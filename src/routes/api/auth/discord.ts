@@ -46,9 +46,9 @@ export function getAvatarUrl(discordId: string, avatar?: string | null) {
 }
 
 export function getAppUrl(request?: Request) {
+  if (request) return new URL(request.url).origin;
   const configured = getEnv("APP_URL");
   if (configured) return normalizeAppUrl(configured);
-  if (request) return new URL(request.url).origin;
   const vercelUrl = getEnv("VERCEL_URL");
   if (vercelUrl) return normalizeAppUrl(`https://${vercelUrl}`);
   return "http://localhost:5173";
