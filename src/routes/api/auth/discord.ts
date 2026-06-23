@@ -1,11 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getEnv, getRequiredEnv } from "@/lib/server/env";
+import { getEnv } from "@/lib/server/env";
 
 export const Route = createFileRoute("/api/auth/discord")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const clientId = getRequiredEnv("DISCORD_CLIENT_ID");
+        const appUrl = getAppUrl(request);
+        const clientId = getEnv("DISCORD_CLIENT_ID");
+        if (!clientId) {
+          return Response.redirect(`${appUrl}/login?error=missing_discord_client`, 302);
+        }
+
         const redirectUri = getRedirectUri(request);
         const state = randomHex(16);
         const url = new URL("https://discord.com/oauth2/authorize");

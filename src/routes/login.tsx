@@ -11,7 +11,11 @@ export const Route = createFileRoute("/login")({
 function Login() {
   const error = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("error") : null;
   const errorMessage =
-    error === "oauth_state"
+    error === "missing_discord_client"
+      ? "Discord login is not configured yet. Add DISCORD_CLIENT_ID in Vercel."
+      : error === "missing_discord_config"
+        ? "Discord login is missing CLIENT ID or CLIENT SECRET in Vercel."
+        : error === "oauth_state"
       ? "Discord login expired. Try again."
       : error === "discord_token"
         ? "Discord refused the callback. Check the redirect URL in Developer Portal."

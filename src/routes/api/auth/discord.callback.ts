@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { prisma } from "@/lib/server/prisma";
 import { createSession, sessionCookie } from "@/lib/server/http";
-import { getRequiredEnv } from "@/lib/server/env";
+import { getEnv } from "@/lib/server/env";
 import { getAppUrl, getAvatarUrl, getRedirectUri } from "./discord";
 
 type DiscordUser = {
@@ -35,12 +35,18 @@ export const Route = createFileRoute("/api/auth/discord/callback")({
           return Response.redirect(`${appUrl}/login?error=oauth_state`, 302);
         }
 
+        const clientId = getEnv("DISCORD_CLIENT_ID");
+        const clientSecret = getEnv("DISCORD_CLIENT_SECRET");
+        if (!clientId || !clientSecret) {
+          return Response.redirect(`${appUrl}/login?error=missing_discord_config`, 302);
+        }
+
         const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
           method: "POST",
           headers: { "content-type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({
-            client_id: getRequiredEnv("DISCORD_CLIENT_ID"),
-            client_secret: getRequiredEnv("DISCORD_CLIENT_SECRET"),
+            client_id: clientId,
+            client_secret: clientSecret,
             grant_type: "authorization_code",
             code,
             redirect_uri: getRedirectUri(request),
