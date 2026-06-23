@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DurationUnit } from "@prisma/client";
+import type { DurationUnit } from "@prisma/client";
 import { z } from "zod";
 import { calculateExpiry, generateLicenseKey } from "@/lib/server/access";
 import { badRequest, forbidden, json, readJson, requireUser } from "@/lib/server/http";

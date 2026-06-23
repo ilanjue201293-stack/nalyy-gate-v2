@@ -17,7 +17,7 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { DurationUnit } from "@prisma/client";
+import type { DurationUnit } from "@prisma/client";
 import { prisma } from "../src/lib/server/prisma";
 import { calculateExpiry, generateLicenseKey } from "../src/lib/server/access";
 

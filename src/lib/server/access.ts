@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { DeviceType, DurationUnit, Prisma, ScriptStatus } from "@prisma/client";
+import type { DeviceType, DurationUnit, Prisma, ScriptStatus } from "@prisma/client";
 import { prisma } from "./prisma";
 
 export function generateApiKey() {
