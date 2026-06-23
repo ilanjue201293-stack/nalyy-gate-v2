@@ -1,9 +1,11 @@
 export function getEnv(name: string, fallback = "") {
-  return process.env[name] ?? fallback;
+  const value = process.env[name];
+  if (!value || value.trim() === "") return fallback;
+  return value.trim();
 }
 
 export function getRequiredEnv(name: string) {
-  const value = process.env[name];
+  const value = getEnv(name);
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`);
   }
