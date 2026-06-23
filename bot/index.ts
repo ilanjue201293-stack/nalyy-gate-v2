@@ -23,8 +23,14 @@ import { calculateExpiry, generateLicenseKey } from "../src/lib/server/access";
 
 const token = process.env.DISCORD_BOT_TOKEN;
 const clientId = process.env.DISCORD_CLIENT_ID;
-const appUrl = process.env.APP_URL ?? "http://localhost:8080";
+const appUrl = process.env.APP_URL ?? "https://nally-gate.vercel.app";
 const loaderBaseUrl = process.env.LOADER_BASE_URL ?? appUrl;
+const databaseUrl =
+  process.env.DATABASE_URL ??
+  process.env.POSTGRES_PRISMA_URL ??
+  process.env.POSTGRES_URL ??
+  process.env.NEON_DATABASE_URL ??
+  "";
 const pendingPanels = new Map<string, { title?: string; description?: string }>();
 const db = prisma as typeof prisma & {
   guildSetting: {
@@ -46,6 +52,20 @@ const db = prisma as typeof prisma & {
 if (!token || !clientId) {
   throw new Error("DISCORD_BOT_TOKEN and DISCORD_CLIENT_ID are required to run the bot.");
 }
+
+if (!databaseUrl || databaseUrl.startsWith("file:") || databaseUrl.includes("dev.db")) {
+  throw new Error(
+    [
+      "The bot is not connected to the hosted database.",
+      "Copy the Neon/Vercel DATABASE_URL into the bot environment, then restart the bot.",
+      "Vercel path: Project > Settings > Environment Variables > DATABASE_URL.",
+      "Local .env example: DATABASE_URL=\"postgresql://...\"",
+    ].join("\n"),
+  );
+}
+
+console.log(`Nalyy Gate bot API URL: ${appUrl}`);
+console.log(`Nalyy Gate loader URL: ${loaderBaseUrl}`);
 
 const durationUnitChoices = [
   { name: "minutes", value: "minutes" },
