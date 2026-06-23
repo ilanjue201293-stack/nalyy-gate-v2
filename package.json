@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "postinstall": "node scripts/ensure-build-env.mjs && prisma generate",
     "start": "node scripts/start-hosted.mjs",
-    "deploy:build": "node scripts/ensure-build-env.mjs && prisma generate && vite build",
+    "deploy:build": "node scripts/ensure-build-env.mjs && prisma generate && node scripts/push-db-if-configured.mjs && vite build",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
