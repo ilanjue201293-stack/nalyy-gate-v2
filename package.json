@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "node scripts/ensure-build-env.mjs && vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "start": "node scripts/start-hosted.mjs",
-    "deploy:build": "vite build",
+    "deploy:build": "node scripts/ensure-build-env.mjs && prisma generate && vite build",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
