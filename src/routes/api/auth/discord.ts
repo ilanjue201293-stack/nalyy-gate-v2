@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getEnv } from "@/lib/server/env";
 
+const PUBLIC_DISCORD_CLIENT_ID = "1518955268774559764";
+
 export const Route = createFileRoute("/api/auth/discord")({
   server: {
     handlers: {
       GET: async ({ request }) => {
         const appUrl = getAppUrl(request);
-        const clientId = getEnv("DISCORD_CLIENT_ID");
+        const clientId = getDiscordClientId();
         if (!clientId) {
           return Response.redirect(`${appUrl}/login?error=missing_discord_client`, 302);
         }
@@ -33,6 +35,10 @@ export const Route = createFileRoute("/api/auth/discord")({
     },
   },
 });
+
+export function getDiscordClientId() {
+  return getEnv("DISCORD_CLIENT_ID", PUBLIC_DISCORD_CLIENT_ID);
+}
 
 export function getAvatarUrl(discordId: string, avatar?: string | null) {
   if (!avatar) return null;

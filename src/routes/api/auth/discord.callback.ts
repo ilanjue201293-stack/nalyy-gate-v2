@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { prisma } from "@/lib/server/prisma";
 import { createSession, sessionCookie } from "@/lib/server/http";
 import { getEnv } from "@/lib/server/env";
-import { getAppUrl, getAvatarUrl, getRedirectUri } from "./discord";
+import { getAppUrl, getAvatarUrl, getDiscordClientId, getRedirectUri } from "./discord";
 
 type DiscordUser = {
   id: string;
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/api/auth/discord/callback")({
           return Response.redirect(`${appUrl}/login?error=oauth_state`, 302);
         }
 
-        const clientId = getEnv("DISCORD_CLIENT_ID");
+        const clientId = getDiscordClientId();
         const clientSecret = getEnv("DISCORD_CLIENT_SECRET");
         if (!clientId || !clientSecret) {
           return Response.redirect(`${appUrl}/login?error=missing_discord_config`, 302);
