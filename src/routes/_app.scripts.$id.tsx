@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_app/scripts/$id")({
   validateSearch: (s: Record<string, unknown>) => ({
     key: typeof s.key === "string" ? s.key : undefined,
   }),
-  loaderDeps: ({ search }) => ({ key: search.key }),
+  loaderDeps: ({ search }: { search: { key?: string } }) => ({ key: search.key }),
   loader: ({ params, deps }) => {
     const s = scripts.find((x) => x.id === params.id);
     if (!s) throw notFound();
