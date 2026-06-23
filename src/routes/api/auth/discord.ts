@@ -47,17 +47,32 @@ export function getAvatarUrl(discordId: string, avatar?: string | null) {
 
 export function getAppUrl(request?: Request) {
   const configured = getEnv("APP_URL");
-  if (configured) return configured.replace(/\/$/, "");
+  if (configured) return normalizeAppUrl(configured);
   if (request) return new URL(request.url).origin;
   const vercelUrl = getEnv("VERCEL_URL");
-  if (vercelUrl) return `https://${vercelUrl}`.replace(/\/$/, "");
+  if (vercelUrl) return normalizeAppUrl(`https://${vercelUrl}`);
   return "http://localhost:5173";
 }
 
 export function getRedirectUri(request?: Request) {
   const configured = getEnv("DISCORD_REDIRECT_URI");
-  if (configured) return configured;
+  if (configured) return normalizeRedirectUri(configured);
   return `${getAppUrl(request)}/api/auth/discord/callback`;
+}
+
+function normalizeAppUrl(value: string) {
+  return value.trim().replace(/\/+$/, "");
+}
+
+function normalizeRedirectUri(value: string) {
+  const trimmed = value.trim();
+  try {
+    const url = new URL(trimmed);
+    url.pathname = url.pathname.replace(/\/{2,}/g, "/");
+    return url.toString();
+  } catch {
+    return trimmed.replace(/([^:])\/{2,}/g, "$1/");
+  }
 }
 
 function randomHex(bytes: number) {
