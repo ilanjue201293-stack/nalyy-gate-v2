@@ -110,7 +110,7 @@ export async function keySummaryWhere(ownerId?: string) {
 
 export async function whitelistSummaryWhere(ownerId?: string) {
   const rows = await prisma.whitelist.findMany({
-    where: ownerId ? { script: { ownerId } } : {},
+    where: { active: true, ...(ownerId ? { script: { ownerId } } : {}) },
     include: { script: true },
     orderBy: { createdAt: "desc" },
   });
@@ -128,6 +128,31 @@ export async function whitelistSummaryWhere(ownerId?: string) {
     status: row.active ? "online" : "offline",
     active: row.active,
     expiresAt: row.expiresAt?.toISOString() ?? null,
+  }));
+}
+
+export async function blacklistSummaryWhere(ownerId?: string) {
+  const rows = await prisma.blacklist.findMany({
+    where: {
+      active: true,
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+      ...(ownerId ? { script: { ownerId } } : {}),
+    },
+    include: { script: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    scriptId: row.scriptId,
+    script: row.script.name,
+    discordId: row.discordId,
+    keyValue: row.keyValue,
+    reason: row.reason ?? "",
+    expiresAt: row.expiresAt?.toISOString() ?? null,
+    createdById: row.createdById,
+    createdAt: row.createdAt.toISOString(),
+    target: row.discordId ? `User ${row.discordId}` : row.keyValue ? `Key ${row.keyValue}` : "Unknown",
   }));
 }
 

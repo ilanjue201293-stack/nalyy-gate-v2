@@ -1,6 +1,19 @@
 import type { Script, ScriptKey, WhitelistUser } from "./mock-data";
 import type { PlanId } from "./plans";
 
+export type BlacklistEntry = {
+  id: string;
+  scriptId: string;
+  script: string;
+  discordId: string | null;
+  keyValue: string | null;
+  reason: string;
+  expiresAt: string | null;
+  createdById: string | null;
+  createdAt: string;
+  target: string;
+};
+
 export type GlobalStats = {
   totals: {
     scripts: number;
@@ -65,6 +78,11 @@ export const apiClient = {
     api<WhitelistUser>("/api/whitelist/add", { method: "POST", body: JSON.stringify(data) }),
   removeWhitelist: (data: unknown) =>
     api<{ ok: true }>("/api/whitelist/remove", { method: "POST", body: JSON.stringify(data) }),
+  blacklists: () => api<BlacklistEntry[]>("/api/blacklist"),
+  addBlacklist: (data: unknown) =>
+    api<BlacklistEntry>("/api/blacklist/add", { method: "POST", body: JSON.stringify(data) }),
+  removeBlacklist: (data: unknown) =>
+    api<{ ok: true }>("/api/blacklist/remove", { method: "POST", body: JSON.stringify(data) }),
   resetHwid: (data: unknown) =>
     api<{ ok: true }>("/api/hwid/reset", { method: "POST", body: JSON.stringify(data) }),
   globalStats: () => api<GlobalStats>("/api/stats/global"),

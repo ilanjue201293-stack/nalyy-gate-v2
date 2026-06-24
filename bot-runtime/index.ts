@@ -50,7 +50,10 @@ const db = prisma as typeof prisma & {
   };
   blacklist: {
     create(args: unknown): Promise<{ id: string }>;
+    findMany(args: unknown): Promise<Array<{ id: string; discordId?: string | null; keyValue?: string | null; reason?: string | null; script?: { name: string } }>>;
     findFirst(args: unknown): Promise<{ reason?: string | null; expiresAt?: Date | null } | null>;
+    findUnique(args: unknown): Promise<{ id: string; scriptId: string; discordId?: string | null; keyValue?: string | null; script?: { name: string; discordGuildId?: string | null } } | null>;
+    update(args: unknown): Promise<{ id: string }>;
     count(args: unknown): Promise<number>;
   };
   hwidBan: {
@@ -77,6 +80,20 @@ if (!databaseUrl || databaseUrl.startsWith("file:") || databaseUrl.includes("dev
 
 console.log(`Nalyy Gate bot API URL: ${appUrl}`);
 console.log(`Nalyy Gate loader URL: ${loaderBaseUrl}`);
+
+async function safeReply(interaction: any, content: string) {
+  if (!interaction.isRepliable()) return;
+  try {
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({ content, ephemeral: true });
+    } else {
+      await interaction.reply({ content, ephemeral: true });
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`Could not send Discord interaction response: ${message}`);
+  }
+}
 
 const durationUnitChoices = [
   { name: "minutes", value: "minutes" },
@@ -158,6 +175,16 @@ const commands = [
     .addIntegerOption((option) => option.setName("duration").setDescription("Blacklist duration amount").setRequired(false))
     .addStringOption((option) => option.setName("unit").setDescription("Duration unit").addChoices(...durationUnitChoices).setRequired(false))
     .addStringOption((option) => option.setName("reason").setDescription("Reason").setRequired(false)),
+  new SlashCommandBuilder()
+    .setName("unblacklist")
+    .setDescription("Remove an active blacklist entry.")
+    .addStringOption((option) =>
+      option
+        .setName("entry")
+        .setDescription("Blacklisted user or key")
+        .setRequired(true)
+        .setAutocomplete(true),
+    ),
   new SlashCommandBuilder()
     .setName("hwid-ban")
     .setDescription("Ban one HWID from a script.")
@@ -299,6 +326,37 @@ async function linkedScriptChoices(guildId: string, query: string) {
   }));
 }
 
+async function blacklistChoices(guildId: string, query: string) {
+  const linkedScripts = await prisma.script.findMany({
+    where: { discordGuildId: guildId },
+    select: { id: true },
+  });
+  const scriptIds = linkedScripts.map((script) => script.id);
+  if (scriptIds.length === 0) return [];
+
+  const rows = await db.blacklist.findMany({
+    where: {
+      active: true,
+      scriptId: { in: scriptIds },
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+    },
+    include: { script: { select: { name: true } } },
+    orderBy: { createdAt: "desc" },
+    take: 25,
+  });
+  const needle = query.trim().toLowerCase();
+  return rows
+    .filter((row) => {
+      const label = `${row.script?.name ?? "Script"} ${row.discordId ?? ""} ${row.keyValue ?? ""} ${row.reason ?? ""}`.toLowerCase();
+      return !needle || label.includes(needle);
+    })
+    .slice(0, 25)
+    .map((row) => ({
+      name: `${row.script?.name ?? "Script"} - ${row.discordId ? `User ${row.discordId}` : `Key ${maskKey(row.keyValue)}`}`,
+      value: row.id,
+    }));
+}
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.once(Events.ClientReady, async () => {
@@ -318,6 +376,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
       const focused = interaction.options.getFocused(true);
       if (focused.name === "script") {
         await interaction.respond(await linkedScriptChoices(interaction.guildId, String(focused.value ?? "")));
+      }
+      if (focused.name === "entry") {
+        await interaction.respond(await blacklistChoices(interaction.guildId, String(focused.value ?? "")));
       }
       return;
     }
@@ -517,6 +578,27 @@ client.on(Events.InteractionCreate, async (interaction) => {
         }
         await interaction.reply({
           content: `Blacklist added for **${script.name}**.${target ? ` User: ${target}` : ""}${keyValue ? ` Key: \`${maskKey(keyValue)}\`` : ""}\nExpires: ${expiresAtLabel(duration.expiresAt)}\nReason: ${reason}`,
+          ephemeral: true,
+        });
+        return;
+      }
+
+      if (interaction.commandName === "unblacklist") {
+        const entryId = interaction.options.getString("entry", true);
+        const row = await db.blacklist.findUnique({
+          where: { id: entryId },
+          include: { script: true },
+        });
+        if (!row || row.script?.discordGuildId !== guildId) throw new Error("Blacklist entry not found on this server.");
+        await db.blacklist.update({ where: { id: row.id }, data: { active: false } });
+        if (row.keyValue) {
+          await prisma.key.updateMany({
+            where: { scriptId: row.scriptId, keyValue: row.keyValue },
+            data: { revoked: false },
+          });
+        }
+        await interaction.reply({
+          content: `Blacklist removed for **${row.script?.name ?? "script"}**.${row.discordId ? ` User: <@${row.discordId}>` : ""}${row.keyValue ? ` Key: \`${maskKey(row.keyValue)}\`` : ""}`,
           ephemeral: true,
         });
         return;
@@ -869,13 +951,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Something went wrong.";
-    if (interaction.isRepliable()) {
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({ content: message, ephemeral: true });
-      } else {
-        await interaction.reply({ content: message, ephemeral: true });
-      }
-    }
+    await safeReply(interaction, message);
   }
 });
 

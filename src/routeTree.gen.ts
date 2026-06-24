@@ -23,9 +23,11 @@ import { Route as AppStatisticsRouteImport } from './routes/_app.statistics'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppKeysRouteImport } from './routes/_app.keys'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppBlacklistRouteImport } from './routes/_app.blacklist'
 import { Route as ApiWhitelistIndexRouteImport } from './routes/api/whitelist/index'
 import { Route as ApiScriptsIndexRouteImport } from './routes/api/scripts/index'
 import { Route as ApiKeysIndexRouteImport } from './routes/api/keys/index'
+import { Route as ApiBlacklistIndexRouteImport } from './routes/api/blacklist/index'
 import { Route as AppScriptsIndexRouteImport } from './routes/_app.scripts.index'
 import { Route as ApiLoaderScriptIdRouteImport } from './routes/api/loader.$scriptId'
 import { Route as ApiWhitelistRemoveRouteImport } from './routes/api/whitelist/remove'
@@ -37,6 +39,8 @@ import { Route as ApiScriptsIdRouteImport } from './routes/api/scripts/$id'
 import { Route as ApiKeysCreateRouteImport } from './routes/api/keys/create'
 import { Route as ApiKeysIdRouteImport } from './routes/api/keys/$id'
 import { Route as ApiHwidResetRouteImport } from './routes/api/hwid/reset'
+import { Route as ApiBlacklistRemoveRouteImport } from './routes/api/blacklist/remove'
+import { Route as ApiBlacklistAddRouteImport } from './routes/api/blacklist/add'
 import { Route as ApiBillingSelectPlanRouteImport } from './routes/api/billing/select-plan'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthDiscordRouteImport } from './routes/api/auth/discord'
@@ -119,6 +123,11 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
+const AppBlacklistRoute = AppBlacklistRouteImport.update({
+  id: '/blacklist',
+  path: '/blacklist',
+  getParentRoute: () => AppRoute,
+} as any)
 const ApiWhitelistIndexRoute = ApiWhitelistIndexRouteImport.update({
   id: '/api/whitelist/',
   path: '/api/whitelist/',
@@ -132,6 +141,11 @@ const ApiScriptsIndexRoute = ApiScriptsIndexRouteImport.update({
 const ApiKeysIndexRoute = ApiKeysIndexRouteImport.update({
   id: '/api/keys/',
   path: '/api/keys/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBlacklistIndexRoute = ApiBlacklistIndexRouteImport.update({
+  id: '/api/blacklist/',
+  path: '/api/blacklist/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppScriptsIndexRoute = AppScriptsIndexRouteImport.update({
@@ -187,6 +201,16 @@ const ApiKeysIdRoute = ApiKeysIdRouteImport.update({
 const ApiHwidResetRoute = ApiHwidResetRouteImport.update({
   id: '/api/hwid/reset',
   path: '/api/hwid/reset',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBlacklistRemoveRoute = ApiBlacklistRemoveRouteImport.update({
+  id: '/api/blacklist/remove',
+  path: '/api/blacklist/remove',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBlacklistAddRoute = ApiBlacklistAddRouteImport.update({
+  id: '/api/blacklist/add',
+  path: '/api/blacklist/add',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBillingSelectPlanRoute = ApiBillingSelectPlanRouteImport.update({
@@ -259,6 +283,7 @@ export interface FileRoutesByFullPath {
   '/how-it-works': typeof HowItWorksRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
+  '/blacklist': typeof AppBlacklistRoute
   '/dashboard': typeof AppDashboardRoute
   '/keys': typeof AppKeysRoute
   '/settings': typeof AppSettingsRoute
@@ -272,6 +297,8 @@ export interface FileRoutesByFullPath {
   '/api/auth/discord': typeof ApiAuthDiscordRouteWithChildren
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/billing/select-plan': typeof ApiBillingSelectPlanRoute
+  '/api/blacklist/add': typeof ApiBlacklistAddRoute
+  '/api/blacklist/remove': typeof ApiBlacklistRemoveRoute
   '/api/hwid/reset': typeof ApiHwidResetRoute
   '/api/keys/$id': typeof ApiKeysIdRouteWithChildren
   '/api/keys/create': typeof ApiKeysCreateRoute
@@ -283,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/api/whitelist/remove': typeof ApiWhitelistRemoveRoute
   '/api/loader/$scriptId': typeof ApiLoaderScriptIdRoute
   '/scripts/': typeof AppScriptsIndexRoute
+  '/api/blacklist/': typeof ApiBlacklistIndexRoute
   '/api/keys/': typeof ApiKeysIndexRoute
   '/api/scripts/': typeof ApiScriptsIndexRoute
   '/api/whitelist/': typeof ApiWhitelistIndexRoute
@@ -300,6 +328,7 @@ export interface FileRoutesByTo {
   '/how-it-works': typeof HowItWorksRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
+  '/blacklist': typeof AppBlacklistRoute
   '/dashboard': typeof AppDashboardRoute
   '/keys': typeof AppKeysRoute
   '/settings': typeof AppSettingsRoute
@@ -313,6 +342,8 @@ export interface FileRoutesByTo {
   '/api/auth/discord': typeof ApiAuthDiscordRouteWithChildren
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/billing/select-plan': typeof ApiBillingSelectPlanRoute
+  '/api/blacklist/add': typeof ApiBlacklistAddRoute
+  '/api/blacklist/remove': typeof ApiBlacklistRemoveRoute
   '/api/hwid/reset': typeof ApiHwidResetRoute
   '/api/keys/$id': typeof ApiKeysIdRouteWithChildren
   '/api/keys/create': typeof ApiKeysCreateRoute
@@ -324,6 +355,7 @@ export interface FileRoutesByTo {
   '/api/whitelist/remove': typeof ApiWhitelistRemoveRoute
   '/api/loader/$scriptId': typeof ApiLoaderScriptIdRoute
   '/scripts': typeof AppScriptsIndexRoute
+  '/api/blacklist': typeof ApiBlacklistIndexRoute
   '/api/keys': typeof ApiKeysIndexRoute
   '/api/scripts': typeof ApiScriptsIndexRoute
   '/api/whitelist': typeof ApiWhitelistIndexRoute
@@ -343,6 +375,7 @@ export interface FileRoutesById {
   '/how-it-works': typeof HowItWorksRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
+  '/_app/blacklist': typeof AppBlacklistRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/keys': typeof AppKeysRoute
   '/_app/settings': typeof AppSettingsRoute
@@ -356,6 +389,8 @@ export interface FileRoutesById {
   '/api/auth/discord': typeof ApiAuthDiscordRouteWithChildren
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/billing/select-plan': typeof ApiBillingSelectPlanRoute
+  '/api/blacklist/add': typeof ApiBlacklistAddRoute
+  '/api/blacklist/remove': typeof ApiBlacklistRemoveRoute
   '/api/hwid/reset': typeof ApiHwidResetRoute
   '/api/keys/$id': typeof ApiKeysIdRouteWithChildren
   '/api/keys/create': typeof ApiKeysCreateRoute
@@ -367,6 +402,7 @@ export interface FileRoutesById {
   '/api/whitelist/remove': typeof ApiWhitelistRemoveRoute
   '/api/loader/$scriptId': typeof ApiLoaderScriptIdRoute
   '/_app/scripts/': typeof AppScriptsIndexRoute
+  '/api/blacklist/': typeof ApiBlacklistIndexRoute
   '/api/keys/': typeof ApiKeysIndexRoute
   '/api/scripts/': typeof ApiScriptsIndexRoute
   '/api/whitelist/': typeof ApiWhitelistIndexRoute
@@ -386,6 +422,7 @@ export interface FileRouteTypes {
     | '/how-it-works'
     | '/login'
     | '/pricing'
+    | '/blacklist'
     | '/dashboard'
     | '/keys'
     | '/settings'
@@ -399,6 +436,8 @@ export interface FileRouteTypes {
     | '/api/auth/discord'
     | '/api/auth/me'
     | '/api/billing/select-plan'
+    | '/api/blacklist/add'
+    | '/api/blacklist/remove'
     | '/api/hwid/reset'
     | '/api/keys/$id'
     | '/api/keys/create'
@@ -410,6 +449,7 @@ export interface FileRouteTypes {
     | '/api/whitelist/remove'
     | '/api/loader/$scriptId'
     | '/scripts/'
+    | '/api/blacklist/'
     | '/api/keys/'
     | '/api/scripts/'
     | '/api/whitelist/'
@@ -427,6 +467,7 @@ export interface FileRouteTypes {
     | '/how-it-works'
     | '/login'
     | '/pricing'
+    | '/blacklist'
     | '/dashboard'
     | '/keys'
     | '/settings'
@@ -440,6 +481,8 @@ export interface FileRouteTypes {
     | '/api/auth/discord'
     | '/api/auth/me'
     | '/api/billing/select-plan'
+    | '/api/blacklist/add'
+    | '/api/blacklist/remove'
     | '/api/hwid/reset'
     | '/api/keys/$id'
     | '/api/keys/create'
@@ -451,6 +494,7 @@ export interface FileRouteTypes {
     | '/api/whitelist/remove'
     | '/api/loader/$scriptId'
     | '/scripts'
+    | '/api/blacklist'
     | '/api/keys'
     | '/api/scripts'
     | '/api/whitelist'
@@ -469,6 +513,7 @@ export interface FileRouteTypes {
     | '/how-it-works'
     | '/login'
     | '/pricing'
+    | '/_app/blacklist'
     | '/_app/dashboard'
     | '/_app/keys'
     | '/_app/settings'
@@ -482,6 +527,8 @@ export interface FileRouteTypes {
     | '/api/auth/discord'
     | '/api/auth/me'
     | '/api/billing/select-plan'
+    | '/api/blacklist/add'
+    | '/api/blacklist/remove'
     | '/api/hwid/reset'
     | '/api/keys/$id'
     | '/api/keys/create'
@@ -493,6 +540,7 @@ export interface FileRouteTypes {
     | '/api/whitelist/remove'
     | '/api/loader/$scriptId'
     | '/_app/scripts/'
+    | '/api/blacklist/'
     | '/api/keys/'
     | '/api/scripts/'
     | '/api/whitelist/'
@@ -518,6 +566,8 @@ export interface RootRouteChildren {
   ApiAuthDiscordRoute: typeof ApiAuthDiscordRouteWithChildren
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiBillingSelectPlanRoute: typeof ApiBillingSelectPlanRoute
+  ApiBlacklistAddRoute: typeof ApiBlacklistAddRoute
+  ApiBlacklistRemoveRoute: typeof ApiBlacklistRemoveRoute
   ApiHwidResetRoute: typeof ApiHwidResetRoute
   ApiKeysIdRoute: typeof ApiKeysIdRouteWithChildren
   ApiKeysCreateRoute: typeof ApiKeysCreateRoute
@@ -528,6 +578,7 @@ export interface RootRouteChildren {
   ApiWhitelistAddRoute: typeof ApiWhitelistAddRoute
   ApiWhitelistRemoveRoute: typeof ApiWhitelistRemoveRoute
   ApiLoaderScriptIdRoute: typeof ApiLoaderScriptIdRoute
+  ApiBlacklistIndexRoute: typeof ApiBlacklistIndexRoute
   ApiKeysIndexRoute: typeof ApiKeysIndexRoute
   ApiScriptsIndexRoute: typeof ApiScriptsIndexRoute
   ApiWhitelistIndexRoute: typeof ApiWhitelistIndexRoute
@@ -636,6 +687,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/blacklist': {
+      id: '/_app/blacklist'
+      path: '/blacklist'
+      fullPath: '/blacklist'
+      preLoaderRoute: typeof AppBlacklistRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/api/whitelist/': {
       id: '/api/whitelist/'
       path: '/api/whitelist'
@@ -655,6 +713,13 @@ declare module '@tanstack/react-router' {
       path: '/api/keys'
       fullPath: '/api/keys/'
       preLoaderRoute: typeof ApiKeysIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/blacklist/': {
+      id: '/api/blacklist/'
+      path: '/api/blacklist'
+      fullPath: '/api/blacklist/'
+      preLoaderRoute: typeof ApiBlacklistIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/scripts/': {
@@ -732,6 +797,20 @@ declare module '@tanstack/react-router' {
       path: '/api/hwid/reset'
       fullPath: '/api/hwid/reset'
       preLoaderRoute: typeof ApiHwidResetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/blacklist/remove': {
+      id: '/api/blacklist/remove'
+      path: '/api/blacklist/remove'
+      fullPath: '/api/blacklist/remove'
+      preLoaderRoute: typeof ApiBlacklistRemoveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/blacklist/add': {
+      id: '/api/blacklist/add'
+      path: '/api/blacklist/add'
+      fullPath: '/api/blacklist/add'
+      preLoaderRoute: typeof ApiBlacklistAddRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/billing/select-plan': {
@@ -822,6 +901,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppBlacklistRoute: typeof AppBlacklistRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppKeysRoute: typeof AppKeysRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -833,6 +913,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppBlacklistRoute: AppBlacklistRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppKeysRoute: AppKeysRoute,
   AppSettingsRoute: AppSettingsRoute,
@@ -895,6 +976,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthDiscordRoute: ApiAuthDiscordRouteWithChildren,
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiBillingSelectPlanRoute: ApiBillingSelectPlanRoute,
+  ApiBlacklistAddRoute: ApiBlacklistAddRoute,
+  ApiBlacklistRemoveRoute: ApiBlacklistRemoveRoute,
   ApiHwidResetRoute: ApiHwidResetRoute,
   ApiKeysIdRoute: ApiKeysIdRouteWithChildren,
   ApiKeysCreateRoute: ApiKeysCreateRoute,
@@ -905,6 +988,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWhitelistAddRoute: ApiWhitelistAddRoute,
   ApiWhitelistRemoveRoute: ApiWhitelistRemoveRoute,
   ApiLoaderScriptIdRoute: ApiLoaderScriptIdRoute,
+  ApiBlacklistIndexRoute: ApiBlacklistIndexRoute,
   ApiKeysIndexRoute: ApiKeysIndexRoute,
   ApiScriptsIndexRoute: ApiScriptsIndexRoute,
   ApiWhitelistIndexRoute: ApiWhitelistIndexRoute,
