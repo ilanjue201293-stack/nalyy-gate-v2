@@ -1,0 +1,17 @@
+{
+  "name": "nalyy-gate-bot-runtime",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "prisma generate",
+    "bot": "tsx index.ts",
+    "start": "npm run bot"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.1",
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.2.3",
+    "prisma": "^6.19.1",
+    "tsx": "^4.21.0"
+  }
+}
